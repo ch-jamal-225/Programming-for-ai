@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head><title>Analysis Result</title></head>
+<body>
+    <h1>Chat Analysis</h1>
+    <p><strong>Total Messages:</strong> {{ result.total_messages }}</p>
+    <p><strong>Total Words:</strong> {{ result.total_words }}</p>
+    <h2>Top Words:</h2>
+    <ul>
+    {% for word, count in result.top_words %}
+        <li>{{ word }} - {{ count }}</li>
+    {% endfor %}
+    </ul>
+    <h2>Top Emojis:</h2>
+    <ul>
+    {% for emo, count in result.top_emojis %}
+        <li>{{ emo }} - {{ count }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
