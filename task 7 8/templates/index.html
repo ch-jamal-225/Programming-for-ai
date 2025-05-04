@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .stock-info {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .stock-info h2 {
+            margin-bottom: 10px;
+        }
+        .stock-info p {
+            margin: 5px 0;
+        }
+        .chart-container {
+            width: 100%;
+            margin: 20px auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Price Tracker</h1>
+        <form method="POST">
+            <input type="text" id="symbol" name="symbol" placeholder="Enter stock symbol (e.g., AAPL)" required>
+            <button type="submit">Get Price</button>
+        </form>
+
+        {% if stock_data %}
+            <div class="stock-info">
+                <h2>{{ stock_data.symbol }}</h2>
+                <p>Open: ${{ stock_data.open }}</p>
+                <p>High: ${{ stock_data.high }}</p>
+                <p>Low: ${{ stock_data.low }}</p>
+                <p>Close: ${{ stock_data.close }}</p>
+                <p>Volume: {{ stock_data.volume }}</p>
+                <p>Last Updated: {{ stock_data.last_updated }}</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="stockChart"></canvas>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        {% if historical_data %}
+            const dates = {{ historical_data | map(attribute='date') | list | tojson | safe }};
+            const closingPrices = {{ historical_data | map(attribute='close') | list | tojson | safe }};
+
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            const stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Closing Price',
+                        data: closingPrices,
+                        borderColor: '#007bff',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price (USD)'
+                            },
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        {% endif %}
+    </script>
+</body>
+</html>
